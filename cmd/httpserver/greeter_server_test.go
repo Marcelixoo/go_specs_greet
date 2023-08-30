@@ -2,10 +2,12 @@ package main_test
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"testing"
 	"time"
 
+	"github.com/Marcelixoo/go_specs_greet/adapters"
 	"github.com/Marcelixoo/go_specs_greet/adapters/httpserver"
 	"github.com/Marcelixoo/go_specs_greet/specifications"
 	"github.com/alecthomas/assert/v2"
@@ -14,10 +16,17 @@ import (
 )
 
 func TestGreeterServer(t *testing.T) {
-	setupTestContainers(t)
+	var (
+		port           = "8080"
+		dockerFilePath = "./cmd/httpserver/Dockerfile"
+		baseURL        = fmt.Sprintf("http://localhost:%s", port)
+		driver         = httpserver.Driver{
+			BaseURL: baseURL,
+			Client:  &http.Client{Timeout: 1 * time.Second},
+		}
+	)
 
-	client := http.Client{Timeout: 1 * time.Second}
-	driver := httpserver.Driver{BaseURL: "http://localhost:8080", Client: &client}
+	adapters.StartDockerServer(t, port, dockerFilePath)
 	specifications.GreetSpecification(t, driver)
 }
 
