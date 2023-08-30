@@ -2,10 +2,12 @@ package main_test
 
 import (
 	"context"
+	"net/http"
 	"testing"
+	"time"
 
-	"github.com/Marcelixoo/go_specs_greet"
-	"github.com/Marcelixoo/learn-go-with-tests/scaling-acceptance-tests/specifications"
+	go_specs_greet "github.com/Marcelixoo/go_specs_greet"
+	"github.com/Marcelixoo/go_specs_greet/specifications"
 	"github.com/alecthomas/assert/v2"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
@@ -14,7 +16,8 @@ import (
 func TestGreeterServer(t *testing.T) {
 	setupTestContainers(t)
 
-	driver := go_specs_greet.Driver{BaseURL: "http://localhost:8080"}
+	client := http.Client{Timeout: 1 * time.Second}
+	driver := go_specs_greet.Driver{BaseURL: "http://localhost:8080", Client: &client}
 	specifications.GreetSpecification(t, driver)
 }
 
